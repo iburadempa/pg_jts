@@ -1,2 +1,2 @@
-pyscopg2
+psycopg2
 
