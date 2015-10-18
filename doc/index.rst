@@ -12,9 +12,9 @@ pg_jts: Create JSON-table-schemas from a live PostgreSQL database
 .. toctree::
    :maxdepth: 2
 
-   intro.rst
-   install.rst
-   usage.rst
-   api/index.rst
+   src/intro.rst
+   src/install.rst
+   src/usage.rst
+   src/api/index.rst
 
 Source: https://github.com/iburadempa/pg_jts/
