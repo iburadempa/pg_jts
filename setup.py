@@ -5,7 +5,7 @@ from pg_jts import __version__ as version_triple
 
 here = path.abspath(path.dirname(__file__))
 
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
+with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
@@ -39,7 +39,7 @@ setup(
         # that you indicate whether you support Python 2, Python 3 or both.
         'Programming Language :: Python :: 3.4',
     ],
-    keywords='set integer integers range ranges multiple span interval operations',
+    keywords='PostgreSQL Postgres extract schema JTS JSON table schema',
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
     packages=['pg_jts'],
