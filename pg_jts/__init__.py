@@ -30,3 +30,5 @@ pg_jts extracts JSON table schemas from a live PostgreSQL database.
 """
 
 from .pg_jts import get_database, get_schema_table_column_triples
+
+__version__ = (0, 0, 1)
