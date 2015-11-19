@@ -45,14 +45,18 @@ Database cursor within connection :any:`conn`.
 """
 
 
-def db_init(db_conn_str=None):
+def db_init(db_conn_params=None):
     """
-    Initialize a database connection using a connection string.
+    Initialize a database connection using a connection string or a connection
+    dictionary.
     """
     global conn
     global cur
-    if db_conn_str is not None:
-        conn = psycopg2.connect(db_conn_str)
+    if db_conn_params:
+        if isinstance(db_conn_params, dict):
+            conn = psycopg2.connect(**db_conn_params)
+        else:
+            conn = psycopg2.connect(db_conn_params)
         cur = conn.cursor()
 
 
