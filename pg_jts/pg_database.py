@@ -148,12 +148,11 @@ def get_columns(schema_name, table_name):
     SELECT
         att.attname AS column_name,
         SUBSTR(typ.typname, CASE WHEN attndims>0 THEN 2 ELSE 1 END)
-            || COALESCE('(' ||
-                information_schema._pg_char_max_length(
-                information_schema._pg_truetypid(att.*, typ.*),
-                information_schema._pg_truetypmod(att.*, typ.*)
-                )::information_schema.cardinal_number
-                || ')', '')
+            || COALESCE(
+                '(' || c.character_maximum_length || ')',
+                '(' || c.numeric_precision || ',' || CASE WHEN c.numeric_scale > 0 THEN c.numeric_scale END || ')',
+                ''
+            )
             || repeat('[]', attndims) AS datatype,
         att.attnum AS ordinal_position,
         NOT att.attnotnull AS null_allowed,
@@ -166,6 +165,9 @@ def get_columns(schema_name, table_name):
         LEFT JOIN pg_type AS typ ON typ.oid = att.atttypid
         LEFT JOIN pg_attrdef AS ad ON ad.adrelid = att.attrelid
                                       AND ad.adnum = att.attnum
+        LEFT JOIN information_schema.columns AS c ON c.table_schema = nsp.nspname
+                                                     AND c.table_name = cls.relname
+                                                     AND c.column_name = att.attname
     WHERE
             nsp.nspname=%s
         AND cls.relkind='r'
