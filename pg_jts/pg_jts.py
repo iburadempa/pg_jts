@@ -313,7 +313,7 @@ def _collect_columns(schema_name, table_name, unique):
     """
     res_columns = []
     columns = pd.get_columns(schema_name, table_name)
-    for column in columns:  # columns are ordered by ordinal position
+    for column in columns:  # columns are already ordered by ordinal position
         res_column = {}
         res_column['name'] = column['column_name']
         res_column['type'] = column['datatype']
@@ -323,6 +323,9 @@ def _collect_columns(schema_name, table_name, unique):
         default_expr = column['column_default']
         if default_expr:
             res_column['default_value'] = _format_default(default_expr)
+        collation = column['column_collation']
+        if collation:
+            res_column['collation'] = collation
         constraints = _collect_column_constraints(column, unique)
         if constraints:
             res_column['constraints'] = constraints

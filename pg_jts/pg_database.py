@@ -135,53 +135,64 @@ def get_columns(schema_name, table_name):
     """
     Return the column properties for given *table_name* and *schema_name*.
 
-    Return a list of dictionaries with these keys:
+    Return a list of dictionaries (each describing a column) with these keys:
 
-      * **column_name**:
-      * **datatype**: 
-      * **ordinal_pos**: 
-      * **null**: 
-      * **column_default**: 
-      * **column_comment**: 
+      * **column_name**: name of the column
+      * **datatype**: information on the datatype
+      * **ordinal_position**: ordinal position of the column within the table
+      * **null**: whether NULL is allowed as column value
+      * **column_default**: the default value of the column
+      * **column_comment**: the comment on the column
+      * **column_collation**: the column collation (if any)
+
+    The list elements are sorted by the ordinal position of the columns
+    within the table.
+
+    Uses PostgreSQL's built-in function `format_type`_ for rendering the
+    datatype, but replaces some datatype names with the common shorter versions
+    (e.g., *varchar* instead of *character varying*).
+
+    .. _format_type: https://doxygen.postgresql.org/format__type_8c_source.html
     """
     q = """
     SELECT
-        att.attname AS column_name,
-        SUBSTR(typ.typname, CASE WHEN attndims>0 THEN 2 ELSE 1 END)
-            || COALESCE('(' ||
-                information_schema._pg_char_max_length(
-                information_schema._pg_truetypid(att.*, typ.*),
-                information_schema._pg_truetypmod(att.*, typ.*)
-                )::information_schema.cardinal_number
-                || ')', '')
-            || repeat('[]', attndims) AS datatype,
-        att.attnum AS ordinal_position,
-        NOT att.attnotnull AS null_allowed,
-        pg_get_expr(ad.adbin, ad.adrelid) AS column_default,
-        pg_catalog.col_description(cls.oid, att.attnum) AS column_comment
-    FROM
-                  pg_class AS cls
-        LEFT JOIN pg_namespace AS nsp ON nsp.oid = cls.relnamespace
-        LEFT JOIN pg_attribute AS att ON att.attrelid = cls.oid
-        LEFT JOIN pg_type AS typ ON typ.oid = att.atttypid
-        LEFT JOIN pg_attrdef AS ad ON ad.adrelid = att.attrelid
-                                      AND ad.adnum = att.attnum
+        a.attname AS column_name,
+        replace(replace(replace(replace(
+            pg_catalog.format_type(a.atttypid, a.atttypmod),
+                'character varying', 'varchar'), 'character', 'char'),
+                'integer', 'int'), 'boolean', 'bool')
+            || repeat('[]', a.attndims - 1) AS datatype,
+        a.attnum AS ordinal_position,
+        NOT a.attnotnull as null_allowed,
+        (SELECT substring(pg_catalog.pg_get_expr(d.adbin, d.adrelid) for 128)
+         FROM pg_catalog.pg_attrdef d
+         WHERE d.adrelid = a.attrelid AND d.adnum = a.attnum AND a.atthasdef)
+         AS column_default,
+        pg_catalog.col_description(c.oid, a.attnum) AS column_comment,
+        (SELECT c.collname FROM pg_catalog.pg_collation c, pg_catalog.pg_type t
+         WHERE c.oid = a.attcollation AND t.oid = a.atttypid
+               AND a.attcollation <> t.typcollation) AS column_collation
+    FROM pg_catalog.pg_class c
+        LEFT JOIN pg_catalog.pg_namespace n
+               ON n.oid = c.relnamespace
+        LEFT JOIN pg_catalog.pg_attribute a
+               ON a.attrelid = c.oid
     WHERE
-            nsp.nspname=%s
-        AND cls.relkind='r'
-        AND cls.relname=%s
-        AND att.attnum>0
-        AND NOT att.attisdropped
+            n.nspname=%s
+        AND c.relname=%s
+        AND pg_catalog.pg_table_is_visible(c.oid)
+        AND a.attnum > 0 AND NOT a.attisdropped
     ORDER BY
         ordinal_position
     """
     keys = (
         'column_name',
         'datatype',
-        'ordinal_pos',
+        'ordinal_position',
         'null',
         'column_default',
         'column_comment',
+        'column_collation',
     )
     return [dict(zip(keys, r)) for r in
             db_get_all(q, (schema_name, table_name))]
