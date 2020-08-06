@@ -1,10 +1,13 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 from codecs import open
 from os import path
-from pg_jts import __version__ as version_triple
+import re
 
 here = path.abspath(path.dirname(__file__))
 
+with open(path.join(here, 'pg_jts', '__init__.py'), encoding='utf-8') as f:
+    match = re.search(r'\((\d+), (\d+), (\d+)\)', f.read())
+    version = '.'.join([match.group(1), match.group(2), match.group(3)]) if match else '0.0.1'
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
@@ -13,7 +16,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # http://packaging.python.org/en/latest/tutorial.html#version
-    version='.'.join([str(n) for n in version_triple]),
+    version=version,
     description='Create JSON-table-schema from a live PostgreSQL database',
     long_description=long_description,
     url='https://github.com/iburadempa/pg_jts',
@@ -39,9 +42,12 @@ setup(
         # that you indicate whether you support Python 2, Python 3 or both.
         'Programming Language :: Python :: 3.4',
     ],
+    install_requires=[
+        'psycopg2-binary',
+    ],
     keywords='PostgreSQL Postgres extract schema JTS JSON table schema',
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
     packages=['pg_jts'],
-    #test_suite = 'tests',
+    # test_suite = 'tests',
 )
