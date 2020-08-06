@@ -344,7 +344,7 @@ def _collect_column_constraints(column, unique):
     """
     res = {}
     if 'null' in column:
-        res['required'] = column['null']
+        res['required'] = not column['null']
     for constr_i, constr in enumerate(unique):
         if column['column_name'] in constr['fields']:
             if len(constr['fields']) == 1:
