@@ -1,0 +1,20 @@
+# TOML formatted file; see PEP 518
+
+[tool.black]
+line-length = 79
+target_version = ['py37']
+skip-string-normalization = true
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = py37
+
+[testenv]
+setenv = POSTGRESQL_DSN={env:POSTGRESQL_DSN}
+deps = psycopg2-binary
+  twine
+commands = 
+  python -m unittest discover
+  twine check .tox/dist/*
+"""
