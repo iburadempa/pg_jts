@@ -60,6 +60,16 @@ def db_init(db_conn_params=None):
         cur = conn.cursor()
 
 
+def db_close():
+    """
+    Close cursor and connection
+    """
+    global conn
+    global cur
+    cur.close()
+    conn.close()
+
+
 def db_get_all(query, attrs):
     """
     Execute an SQL query and return all rows (as list of tuples).
