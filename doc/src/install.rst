@@ -3,28 +3,14 @@ Installation
 
 **Beware**: This software is in alpha state.
 
-Currently there is no python package; you have to install from source.
+The pg_jts package depends on `psycopg2` or `psycopg2-binary`.
+You will either have to install one of them yourself, or if you
+are fine with installing `psycopg2-binary`, you can add it as an
+extra dependency using your favourite package manager:
 
-It works with python3.4 and PostgreSQL 9.4; other versions are untested,
-but other minor versions of python3 and PostgreSQL 9 are expected to work.
+    pipenv install pg_jts[psycopg2-binary]
+    pip    install pg_jts[psycopg2-binary]
+    pip3   install pg_jts[psycopg2-binary]
 
-You need psycopg2 on your PYTHONPATH.
-
-
-Detailed instructions
----------------------
-
-Prepare a virtualenv with python3::
-
-  mkdir pg_jts
-  cd pg_jts
-  virtualenv -p python3
-  source bin/activate
-
-Install package libpq-dev and then::
-
-  pip3 install psycopg2
-
-In the virtualenv root dir::
-
-  git clone https://github.com/iburadempa/pg_jts.git
+It works with python3.7 and PostgreSQL 11.7; other versions are untested,
+but higher python versions and PostgreSQL 9 and above are expected to work.
