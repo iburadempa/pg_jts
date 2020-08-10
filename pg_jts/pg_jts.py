@@ -145,7 +145,7 @@ adding cardinalities (if present).
 
 import re
 import json
-from .pg_query import db_init
+from .pg_query import db_init, db_close
 from . import pg_database as pd
 
 
@@ -234,15 +234,18 @@ def get_database(db_conn_str,
         res.append(res_schema)
     notifications = _add_annotated_foreign_keys(res, relation_regexps)
     end_time = pd.get_now()
-    return json.dumps({
+    jts = json.dumps({
         'source': 'PostgreSQL',
         'source_version': pd.get_server_version(),
         'database_name': database,
         'database_description': pd.get_database_description(),
         'generation_begin_time': begin_time,
         'generation_end_time': end_time,
-        'datapackages': res
-    }), notifications
+        'datapackages': res,
+        'inheritance': [],
+    })
+    db_close()
+    return jts, notifications
 
 
 def _check_exclude_table(exclude_tables_regexps, table_name):
