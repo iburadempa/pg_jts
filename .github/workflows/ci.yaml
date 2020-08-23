@@ -38,21 +38,21 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install pipenv
         uses: dschep/install-pipenv-action@v1
-      - name: Cache Pipenv virtualenv
-        uses: actions/cache@v2
-        id: pipenv-cache
-        with:
-          path: ~/.pipenv
-          key: ${{ runner.os }}-pipenv-v2-${{ hashFiles('**/Pipfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pipenv-v2-
+#      - name: Cache Pipenv virtualenv
+#        uses: actions/cache@v2
+#        id: pipenv-cache
+#        with:
+#          path: ~/.pipenv
+#          key: ${{ runner.os }}-pipenv-v2-${{ hashFiles('**/Pipfile.lock') }}
+#          restore-keys: |
+#            ${{ runner.os }}-pipenv-v2-
       - name: Install Dependencies
         env:
           PIPENV_NOSPIN: 'true'
           WORKON_HOME: ~/.pipenv/virtualenvs
-          PIPENV_CACHE_DIR: ~/.pipenv/pipcache
+#          PIPENV_CACHE_DIR: ~/.pipenv/pipcache
         run: pipenv install --dev
-        if: steps.pipenv-cache.outputs.cache-hit != 'true'
+#        if: steps.pipenv-cache.outputs.cache-hit != 'true'
       - name: Run tests
         env:
           PIPENV_NOSPIN: 'true'
