@@ -180,7 +180,6 @@ def get_columns(schema_name, table_name):
     WHERE
             n.nspname=%s
         AND c.relname=%s
-        AND pg_catalog.pg_table_is_visible(c.oid)
         AND a.attnum > 0 AND NOT a.attisdropped
     ORDER BY
         ordinal_position
