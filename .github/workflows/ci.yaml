@@ -60,4 +60,4 @@ jobs:
           PYTHONPATH: '.'
           POSTGRESQL_DSN: 'host=localhost dbname=postgres user=postgres password=postgres port=${{ job.services.postgres.ports[5432] }}'
         run: |
-          python -m pipenv run tox
+          pipenv run tox
