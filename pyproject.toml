@@ -8,7 +8,8 @@ skip-string-normalization = true
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = py37
+envlist = py{37,38,39}
+skip_missing_interpreters = True
 
 [testenv]
 setenv = POSTGRESQL_DSN={env:POSTGRESQL_DSN}
