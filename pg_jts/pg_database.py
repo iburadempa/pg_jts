@@ -303,7 +303,7 @@ def get_indexes(schema_name, table_name):
     q = """
     SELECT
         index_name,
-        array_agg(attname) AS columns,
+        array_agg(attname ORDER BY column_position) AS columns,
         indisunique,
         indisprimary,
         create_statement,
